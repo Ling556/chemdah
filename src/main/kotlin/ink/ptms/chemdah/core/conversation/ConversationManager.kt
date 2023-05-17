@@ -19,6 +19,7 @@ import taboolib.common.platform.Schedule
 import taboolib.common.platform.event.EventPriority
 import taboolib.common.platform.event.OptionalEvent
 import taboolib.common.platform.event.SubscribeEvent
+import taboolib.common.platform.function.isPrimaryThread
 import taboolib.common.platform.function.submit
 import taboolib.common.util.sync
 import taboolib.module.configuration.Config
@@ -120,7 +121,7 @@ object ConversationManager {
     @SubscribeEvent
     private fun onClosed(e: ConversationEvents.Closed) {
         if (!e.session.conversation.hasFlag("NO_EFFECT")) {
-            sync {
+            submit(true) {
                 effectFreeze.forEach { e.session.player.removePotionEffect(it.key) }
                 effects.remove(e.session.player.name)?.forEach { e.session.player.addPotionEffect(it) }
                 // 视觉效果
